@@ -190,7 +190,7 @@ changelog {
     version.set(properties("pluginVersion").get())
     path.set(file("CHANGELOG.md").canonicalPath)
     itemPrefix.set("-")
-    keepUnreleasedSection.set(false)
+    keepUnreleasedSection.set(true)
     unreleasedTerm.set("[Unreleased]")
     groups.set(listOf("Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"))
     lineSeparator.set("\n")
