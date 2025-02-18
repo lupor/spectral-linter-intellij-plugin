@@ -6,11 +6,11 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.CharsetToolkit
 import com.schwarzit.spectralIntellijPlugin.settings.ProjectSettingsState
 import kotlinx.serialization.SerializationException
 import java.io.File
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.text.ParseException
 import java.time.Duration
 import java.util.*
@@ -41,26 +41,18 @@ class SpectralRunner(private val project: Project) {
 
         val fileForAnalysis = file?.absolutePath ?: tempFile!!.absolutePath
         return try {
-            createCommand()
+            val command = "spectral -r ${settings.ruleset} -f json lint $fileForAnalysis"
+            val commandEnv = mapOf("NODE_OPTIONS" to "--no-warnings") + System.getenv()
+            GeneralCommandLine(command.split(" "))
                 .withWorkDirectory(project.basePath)
-                .withParameters("-r", settings.ruleset)
-                .withParameters("-f", "json")
-                .withParameters("lint")
-                // With this we keep the file name intact. Which allows for file-based overrides in the spectral ruleset
-                .withParameters(fileForAnalysis)
+                .withCharset(CharsetToolkit.getDefaultSystemCharset())
+                .withEnvironment(commandEnv)
                 .execute(fileForAnalysis)
         } finally {
             if (tempFile != null && !tempFile.delete()) {
                 logger.debug("Failed to delete temporary file ${tempFile.canonicalPath}")
             }
         }
-    }
-
-    private fun createCommand(): GeneralCommandLine {
-        // NODE_OPTIONS need to be set as the spectral cli currently uses a deprecated dependency (See: https://github.com/stoplightio/spectral/issues/2622)
-        // By default this warning would be printed when executing the command making the plugin fail when attempting to parse the command response
-        return GeneralCommandLine("spectral").withCharset(StandardCharsets.UTF_8)
-            .withEnvironment("NODE_OPTIONS", "--no-warnings")
     }
 
     @Throws(SpectralException::class)
