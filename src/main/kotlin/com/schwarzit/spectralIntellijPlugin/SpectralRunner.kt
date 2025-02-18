@@ -6,6 +6,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.CharsetToolkit
 import com.schwarzit.spectralIntellijPlugin.settings.ProjectSettingsState
 import kotlinx.serialization.SerializationException
@@ -41,18 +42,34 @@ class SpectralRunner(private val project: Project) {
 
         val fileForAnalysis = file?.absolutePath ?: tempFile!!.absolutePath
         return try {
-            val command = "spectral -r ${settings.ruleset} -f json lint $fileForAnalysis"
-            val commandEnv = mapOf("NODE_OPTIONS" to "--no-warnings") + System.getenv()
-            GeneralCommandLine(command.split(" "))
-                .withWorkDirectory(project.basePath)
-                .withCharset(CharsetToolkit.getDefaultSystemCharset())
-                .withEnvironment(commandEnv)
+            getCommand(settings, fileForAnalysis)
                 .execute(fileForAnalysis)
         } finally {
             if (tempFile != null && !tempFile.delete()) {
                 logger.debug("Failed to delete temporary file ${tempFile.canonicalPath}")
             }
         }
+    }
+
+    private fun getCommand(
+        settings: ProjectSettingsState,
+        filePath: String
+    ): GeneralCommandLine {
+        var commandString = "spectral -r ${settings.ruleset} -f json lint $filePath"
+        if (SystemInfo.isWindows) {
+            commandString = "cmd /c $commandString"
+        }
+        val command = commandString.split(" ")
+        val commandLine = GeneralCommandLine(command[0])
+            .withParameters(command.drop(1))
+            .withWorkDirectory(project.basePath)
+            .withCharset(CharsetToolkit.getDefaultSystemCharset())
+            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.SYSTEM)
+
+        val commandEnv = mapOf("NODE_OPTIONS" to "--no-warnings")
+        commandLine.withEnvironment(commandLine.parentEnvironment + commandEnv)
+
+        return commandLine
     }
 
     @Throws(SpectralException::class)
@@ -62,6 +79,7 @@ class SpectralRunner(private val project: Project) {
             "Cannot read properties of null" to "One of your custom rules in your ruleset may have a null reference",
             "Error running Spectral" to "Something unexpected happened. Validate ruleset and yaml file structure"
         )
+        println(this.environment)
         val output = try {
             executor.execute(this, timeout)
         } catch (e: ExecutionException) {
