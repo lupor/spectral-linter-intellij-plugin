@@ -5,6 +5,27 @@
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## 0.0.8 - 2025-02-18
+
+### Changed
+
+- Added basic handling for silent errors
+- Fixed issues with file level overrides in rulesets
+- Fixed parsing issues due to paths array containing elements other than strings
+- Added better messages for file level issues
+
 ## 0.0.7 - 2025-02-12
 
 ### Changed
