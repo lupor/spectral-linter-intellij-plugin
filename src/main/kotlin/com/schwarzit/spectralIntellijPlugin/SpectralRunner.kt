@@ -7,7 +7,6 @@ import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
-import com.intellij.openapi.vfs.CharsetToolkit
 import com.schwarzit.spectralIntellijPlugin.settings.ProjectSettingsState
 import kotlinx.serialization.SerializationException
 import java.io.File
@@ -63,7 +62,7 @@ class SpectralRunner(private val project: Project) {
         val commandLine = GeneralCommandLine(command[0])
             .withParameters(command.drop(1))
             .withWorkDirectory(project.basePath)
-            .withCharset(CharsetToolkit.getDefaultSystemCharset())
+            .withCharset(Charsets.UTF_8)
             .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.SYSTEM)
 
         val commandEnv = mapOf("NODE_OPTIONS" to "--no-warnings")
