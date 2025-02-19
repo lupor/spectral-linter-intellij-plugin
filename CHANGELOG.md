@@ -17,6 +17,13 @@
 
 ### Security
 
+## 0.0.10 - 2025-02-19
+
+### Fixed
+
+- Fixed mac compatibility
+- Fixed windows compatibility binary installation methods
+
 ## 0.0.9 - 2025-02-19
 
 ### Added
