@@ -17,7 +17,13 @@ OpenApi schemas. It is a fork of https://github.com/SchwarzIT/spectral-intellij-
   it manually using
   <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>⚙️</kbd> > <kbd>Install plugin from disk...</kbd>
 
-This plugin it is required to have the spectral CLI installed on your system.
+This plugin it is required to have the spectral CLI installed on your system. For windows it is recommended to
+install the binary without going through Nodejs.
+
+> **Warning** Should you still want to use the spectral package via NodeJs on Windows then
+you must check "Use node package on on Windows" in the plugin settings. This is necessary for the node packages to
+work and will have a performance cost.
+
 If you don't have it installed yet make sure to follow this
 guide: [Installing Spectral](https://docs.stoplight.io/docs/spectral/b8391e051b7d8-installation)
 
@@ -62,17 +68,23 @@ Examples:
 association.
 If it is detected as a plain text (or any other type) it will be ignored.
 
+### Possibility to use file level overrides
+Spectral offers the possibility to add file based overrides as described [here](https://docs.stoplight.io/docs/spectral/293426e270fac-overrides).
+These don't work by default. If you want to make use of them, then you need to check "Use file level overrides" in the plugin settings.
+
+> **Warning** If turned on, this has a important caveat; you need to save the file for the linting output to match your changes again.
+
 <!-- Plugin description end -->
 
 ## Building the plugin
 ### Building
 ```bash
-./gradlew build  
+./gradlew verifyPlugin  
 ```
 
 ### Run compatibility tests
 ```bash
- 
+ ./gradlew buildPlugin  
 ```
 
 ### Run UI tests
@@ -82,12 +94,12 @@ If it is detected as a plain text (or any other type) it will be ignored.
 
 ### Publish new version
 ```bash
-./gradlew publish  
+./gradlew publishPlugin  
 ```
 
 ---
 Plugin based on the [IntelliJ Platform Plugin Template][template].
 
-[template]: https://github.com/JetBrains/intellij-platform-plugin-template
+[template]: https://github.com/JetBrains/intellij-platform-gradle-plugin
 
-[docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/plugin-user-experience.html#plugin-description-and-presentation
+[docs:plugin-description]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html

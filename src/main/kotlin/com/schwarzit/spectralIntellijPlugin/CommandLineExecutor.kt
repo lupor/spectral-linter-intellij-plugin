@@ -12,13 +12,11 @@ class CommandLineExecutor {
         private val logger = getLogger()
     }
 
-    fun execute(commandLIne: GeneralCommandLine, timeout: Duration? = null): ProcessOutput {
-        val command = commandLIne.commandLineString
-        val process = commandLIne.createProcess()
-        val handler = OSProcessHandler(process, command, Charsets.UTF_8)
+    fun execute(commandLine: GeneralCommandLine, timeout: Duration? = null): ProcessOutput {
+        val handler = OSProcessHandler(commandLine)
         val output = ProcessOutput()
 
-        logger.debug("Executing command: $command")
+        logger.debug("Executing command: ${handler.commandLine}")
 
         handler.addProcessListener(object : ProcessAdapter() {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
@@ -38,7 +36,7 @@ class CommandLineExecutor {
 
         if (ended) {
             logger.debug("Command successfully executed with exit code ${output.exitCode}")
-            output.exitCode = process.exitValue()
+            output.exitCode = handler.exitCode!!
         } else {
             logger.debug("Command timed out after ${timeout?.toMillis()} ms")
             handler.destroyProcess()

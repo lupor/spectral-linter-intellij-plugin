@@ -19,6 +19,7 @@ import org.jetbrains.yaml.psi.YAMLFile
 import java.io.File
 import java.nio.file.Path
 
+
 class SpectralExternalAnnotator : ExternalAnnotator<Pair<PsiFile, Editor>, List<SpectralIssue>>() {
     companion object {
         val logger = getLogger()

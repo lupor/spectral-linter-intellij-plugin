@@ -19,6 +19,8 @@ class ProjectSettingsState : PersistentStateComponent<ProjectSettingsState> {
         **/*openapi.yml
         **/*openapi.yaml
     """.trimIndent()
+    var useFileOverrides = false
+    var useNodePackageWin = false
 
     override fun getState(): ProjectSettingsState {
         return this

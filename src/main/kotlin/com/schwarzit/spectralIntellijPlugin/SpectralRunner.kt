@@ -6,11 +6,11 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.SystemInfo
 import com.schwarzit.spectralIntellijPlugin.settings.ProjectSettingsState
 import kotlinx.serialization.SerializationException
 import java.io.File
 import java.io.IOException
-import java.nio.charset.StandardCharsets
 import java.text.ParseException
 import java.time.Duration
 import java.util.*
@@ -30,7 +30,7 @@ class SpectralRunner(private val project: Project) {
     fun run(document: Document): List<SpectralIssue> {
         val file = FileDocumentManager.getInstance().getFile(document)?.toNioPath()?.toFile()
         var tempFile: File? = null
-        if (file == null) {
+        if (file == null || !settings.useFileOverrides) {
             tempFile = try {
                 // It is possible, but unlikely that the editor file is null. In which case we create a temporary one
                 File.createTempFile("spectral-intellij-input-", ".tmp").apply { writeText(document.text) }
@@ -39,15 +39,9 @@ class SpectralRunner(private val project: Project) {
             }
         }
 
-        val fileForAnalysis = file?.absolutePath ?: tempFile!!.absolutePath
+        val fileForAnalysis = tempFile?.absolutePath ?: file!!.absolutePath
         return try {
-            createCommand()
-                .withWorkDirectory(project.basePath)
-                .withParameters("-r", settings.ruleset)
-                .withParameters("-f", "json")
-                .withParameters("lint")
-                // With this we keep the file name intact. Which allows for file-based overrides in the spectral ruleset
-                .withParameters(fileForAnalysis)
+            getCommand(settings, fileForAnalysis)
                 .execute(fileForAnalysis)
         } finally {
             if (tempFile != null && !tempFile.delete()) {
@@ -56,11 +50,25 @@ class SpectralRunner(private val project: Project) {
         }
     }
 
-    private fun createCommand(): GeneralCommandLine {
-        // NODE_OPTIONS need to be set as the spectral cli currently uses a deprecated dependency (See: https://github.com/stoplightio/spectral/issues/2622)
-        // By default this warning would be printed when executing the command making the plugin fail when attempting to parse the command response
-        return GeneralCommandLine("spectral").withCharset(StandardCharsets.UTF_8)
-            .withEnvironment("NODE_OPTIONS", "--no-warnings")
+    private fun getCommand(
+        settings: ProjectSettingsState,
+        filePath: String
+    ): GeneralCommandLine {
+        var commandString = "spectral -r ${settings.ruleset} -f json lint $filePath"
+        if (SystemInfo.isWindows && settings.useNodePackageWin) {
+            commandString = "cmd /c $commandString"
+        }
+        val command = commandString.split(" ")
+        val commandLine = GeneralCommandLine(command[0])
+            .withParameters(command.drop(1))
+            .withWorkDirectory(project.basePath)
+            .withCharset(Charsets.UTF_8)
+            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.SYSTEM)
+
+        val commandEnv = mapOf("NODE_OPTIONS" to "--no-warnings")
+        commandLine.withEnvironment(commandLine.parentEnvironment + commandEnv)
+
+        return commandLine
     }
 
     @Throws(SpectralException::class)
