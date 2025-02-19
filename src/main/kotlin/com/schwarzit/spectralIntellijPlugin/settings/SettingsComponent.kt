@@ -14,7 +14,7 @@ class SettingsComponent {
     val rulesetInput = JBTextField()
     val includedFilesInput = JBTextArea()
     val useFileOverrides = JBCheckBox("Use file level overrides", false)
-    val useNodePackageWin = JBCheckBox("Use node package on on Windows", false)
+    val useNodePackageWin = JBCheckBox("Use node package on Windows", false)
 
     init {
         val overrideTooltip = """
