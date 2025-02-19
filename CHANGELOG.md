@@ -17,6 +17,18 @@
 
 ### Security
 
+## 0.0.9 - 2025-02-19
+
+### Added
+
+- Option to toggle workaround for Windows users that want to use the node package instead of the binary installation
+- Option to toggle support for file level overrides in spectral rulesets
+- Sections in the readme detailing the new options and the caveats
+
+### Fixed
+
+- Fixed the way commands are constructed and ensure that the environment is properly loaded on windows
+
 ## 0.0.8 - 2025-02-18
 
 ### Changed
