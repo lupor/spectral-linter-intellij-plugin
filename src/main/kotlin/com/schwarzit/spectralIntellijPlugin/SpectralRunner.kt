@@ -79,7 +79,6 @@ class SpectralRunner(private val project: Project) {
             "Cannot read properties of null" to "One of your custom rules in your ruleset may have a null reference",
             "Error running Spectral" to "Something unexpected happened. Validate ruleset and yaml file structure"
         )
-        println(this.environment)
         val output = try {
             executor.execute(this, timeout)
         } catch (e: ExecutionException) {
