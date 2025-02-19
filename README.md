@@ -21,7 +21,7 @@ This plugin it is required to have the spectral CLI installed on your system. Fo
 install the binary without going through Nodejs.
 
 > **Warning** Should you still want to use the spectral package via NodeJs on Windows then
-you must check "Use node package on on Windows" in the plugin settings. This is necessary for the node packages to
+you must check "Use node package on Windows" in the plugin settings. This is necessary for the node packages to
 work and will have a performance cost.
 
 If you don't have it installed yet make sure to follow this

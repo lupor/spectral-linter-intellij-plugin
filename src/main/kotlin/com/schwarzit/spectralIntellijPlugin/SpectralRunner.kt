@@ -54,19 +54,23 @@ class SpectralRunner(private val project: Project) {
         settings: ProjectSettingsState,
         filePath: String
     ): GeneralCommandLine {
-        var commandString = "spectral -r ${settings.ruleset} -f json lint $filePath"
+        var commandString = "-r ${settings.ruleset} -f json lint $filePath"
         if (SystemInfo.isWindows && settings.useNodePackageWin) {
-            commandString = "cmd /c $commandString"
+            commandString = "cmd /c spectral $commandString"
+        } else if (SystemInfo.isWindows) {
+            commandString = "spectral.exe $commandString"
+        } else {
+            commandString = "spectral $commandString"
         }
         val command = commandString.split(" ")
         val commandLine = GeneralCommandLine(command[0])
             .withParameters(command.drop(1))
             .withWorkDirectory(project.basePath)
-            .withCharset(Charsets.UTF_8)
-            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.SYSTEM)
+            .withParentEnvironmentType(GeneralCommandLine.ParentEnvironmentType.CONSOLE)
 
         val commandEnv = mapOf("NODE_OPTIONS" to "--no-warnings")
-        commandLine.withEnvironment(commandLine.parentEnvironment + commandEnv)
+        val cleanEnv = mapOf("PATH" to commandLine.parentEnvironment["PATH"]) + commandEnv
+        commandLine.withEnvironment(cleanEnv)
 
         return commandLine
     }
