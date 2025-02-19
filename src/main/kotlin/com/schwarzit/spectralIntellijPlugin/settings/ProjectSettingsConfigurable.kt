@@ -15,6 +15,8 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
 
         settingsComponent.rulesetInput.text = settings.ruleset
         settingsComponent.includedFilesInput.text = settings.includedFiles
+        settingsComponent.useFileOverrides.isSelected = settings.useFileOverrides
+        settingsComponent.useNodePackageWin.isSelected = settings.useNodePackageWin
         return settingsComponent.mainPanel
     }
 
@@ -26,6 +28,8 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
         val settings = project.service<ProjectSettingsState>()
         var modified = settingsComponent.rulesetInput.text != settings.ruleset
         modified = modified || settingsComponent.includedFilesInput.text != settings.includedFiles
+        modified = modified || settingsComponent.useFileOverrides.isSelected != settings.useFileOverrides
+        modified = modified || settingsComponent.useNodePackageWin.isSelected != settings.useNodePackageWin
         return modified
     }
 
@@ -33,6 +37,8 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
         val settings = project.service<ProjectSettingsState>()
         settings.ruleset = settingsComponent.rulesetInput.text
         settings.includedFiles = settingsComponent.includedFilesInput.text
+        settings.useFileOverrides = settingsComponent.useFileOverrides.isSelected
+        settings.useNodePackageWin = settingsComponent.useNodePackageWin.isSelected
     }
 
     override fun getDisplayName(): String {

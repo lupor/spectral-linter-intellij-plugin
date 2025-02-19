@@ -31,7 +31,7 @@ class SpectralRunner(private val project: Project) {
     fun run(document: Document): List<SpectralIssue> {
         val file = FileDocumentManager.getInstance().getFile(document)?.toNioPath()?.toFile()
         var tempFile: File? = null
-        if (file == null) {
+        if (file == null || !settings.useFileOverrides) {
             tempFile = try {
                 // It is possible, but unlikely that the editor file is null. In which case we create a temporary one
                 File.createTempFile("spectral-intellij-input-", ".tmp").apply { writeText(document.text) }
@@ -40,7 +40,7 @@ class SpectralRunner(private val project: Project) {
             }
         }
 
-        val fileForAnalysis = file?.absolutePath ?: tempFile!!.absolutePath
+        val fileForAnalysis = tempFile?.absolutePath ?: file!!.absolutePath
         return try {
             getCommand(settings, fileForAnalysis)
                 .execute(fileForAnalysis)
@@ -56,7 +56,7 @@ class SpectralRunner(private val project: Project) {
         filePath: String
     ): GeneralCommandLine {
         var commandString = "spectral -r ${settings.ruleset} -f json lint $filePath"
-        if (SystemInfo.isWindows) {
+        if (SystemInfo.isWindows && settings.useNodePackageWin) {
             commandString = "cmd /c $commandString"
         }
         val command = commandString.split(" ")
