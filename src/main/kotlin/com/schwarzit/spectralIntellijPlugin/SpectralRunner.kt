@@ -13,7 +13,6 @@ import java.io.File
 import java.io.IOException
 import java.text.ParseException
 import java.time.Duration
-import java.util.*
 import java.util.concurrent.ExecutionException
 
 @Service(Service.Level.PROJECT)
@@ -21,11 +20,14 @@ class SpectralRunner(private val project: Project) {
     companion object {
         private val logger = getLogger()
         private val timeout = Duration.ofSeconds(30)
+
+        @JvmStatic
+        fun getInstance(project: Project): SpectralRunner = project.service()
     }
 
-    private val executor = project.service<CommandLineExecutor>()
-    private val parser = project.service<SpectralOutputParser>()
-    private val settings = project.service<ProjectSettingsState>()
+    private val executor = CommandLineExecutor.getInstance()
+    private val parser = SpectralOutputParser.getInstance()
+    private val settings = ProjectSettingsState.getInstance(project)
 
     fun run(document: Document): List<SpectralIssue> {
         val file = FileDocumentManager.getInstance().getFile(document)?.toNioPath()?.toFile()
@@ -55,12 +57,12 @@ class SpectralRunner(private val project: Project) {
         filePath: String
     ): GeneralCommandLine {
         var commandString = "-r ${settings.ruleset} -f json lint $filePath"
-        if (SystemInfo.isWindows && settings.useNodePackageWin) {
-            commandString = "cmd /c spectral $commandString"
+        commandString = if (SystemInfo.isWindows && settings.useNodePackageWin) {
+            "cmd /c spectral $commandString"
         } else if (SystemInfo.isWindows) {
-            commandString = "spectral.exe $commandString"
+            "spectral.exe $commandString"
         } else {
-            commandString = "spectral $commandString"
+            "spectral $commandString"
         }
         val command = commandString.split(" ")
         val commandLine = GeneralCommandLine(command[0])
