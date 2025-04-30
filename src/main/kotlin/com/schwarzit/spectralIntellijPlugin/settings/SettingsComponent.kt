@@ -1,7 +1,8 @@
 package com.schwarzit.spectralIntellijPlugin.settings
 
 import com.intellij.ide.HelpTooltip
-import com.intellij.ui.dsl.builder.bindSelected
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.dsl.builder.Cell
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JTextArea
 import javax.swing.JTextField
@@ -10,8 +11,8 @@ class SettingsComponent {
 
     val rulesetInput = JTextField()
     val includedFilesInput = JTextArea()
-    var useFileOverrides = false
-    var useNodePackageWin = false
+    lateinit var useNodePackageWin: Cell<JBCheckBox>
+    lateinit var useFileOverrides: Cell<JBCheckBox>
 
     val mainPanel = panel {
         row("Ruleset:") {
@@ -21,8 +22,7 @@ class SettingsComponent {
             cell(includedFilesInput)
         }
         row {
-            checkBox("Use file level overrides")
-                .bindSelected({ useFileOverrides }, { useFileOverrides = it })
+            useFileOverrides = checkBox("Use file level overrides")
                 .applyToComponent {
                     HelpTooltip()
                         .setDescription(
@@ -36,8 +36,7 @@ class SettingsComponent {
                 }
         }
         row {
-            checkBox("Use node package on Windows")
-                .bindSelected({ useNodePackageWin }, { useNodePackageWin = it })
+            useNodePackageWin = checkBox("Use node package on Windows")
                 .applyToComponent {
                     HelpTooltip()
                         .setDescription(
