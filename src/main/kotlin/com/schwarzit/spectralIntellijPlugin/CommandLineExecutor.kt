@@ -2,6 +2,7 @@ package com.schwarzit.spectralIntellijPlugin
 
 import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.execution.process.*
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.util.Key
 import java.time.Duration
@@ -10,6 +11,9 @@ import java.time.Duration
 class CommandLineExecutor {
     companion object {
         private val logger = getLogger()
+
+        @JvmStatic
+        fun getInstance(): CommandLineExecutor = ApplicationManager.getApplication().getService(CommandLineExecutor::class.java)
     }
 
     fun execute(commandLine: GeneralCommandLine, timeout: Duration? = null): ProcessOutput {

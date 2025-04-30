@@ -4,33 +4,27 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 
-val kotlinxSerializationJsonVersion = "1.7.3"
-val kotlinReflectVersion = "2.1.0"
-val springCoreVersion = "6.2.0"
-val junitJupiterVersion = "5.11.3"
+val kotlinxSerializationJsonVersion = "1.8.1"
+val kotlinReflectVersion = "2.1.20"
+val springCoreVersion = "6.2.6"
+val junitJupiterVersion = "5.12.2"
 val junit4Version = "4.13.2"
 val commonsIoVersion = "2.18.0"
-val swaggerParserVersion = "2.1.25"
-val intelliJJsonVersion = "243.23654.117"
-val intelliJYamlVersion = "243.23654.189"
+val intelliJJsonVersion = "251.25410.28"
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
 val platformVersion = properties("platformVersion").get()
-val pluginVersion = properties("pluginVersion").get()
-
-val pluginGroup = properties("pluginGroup").get()
-val sinceBuild = properties("pluginSinceBuild").get()
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.0"
-    id("org.jetbrains.intellij.platform") version "2.2.1"
+    kotlin("jvm") version "2.1.20"
+    id("org.jetbrains.intellij.platform") version "2.5.0"
     id("org.jetbrains.changelog") version "2.2.1"
-    id("org.jetbrains.qodana") version "0.1.13"
-    id("org.jetbrains.kotlinx.kover") version "0.7.3"
-    kotlin("plugin.serialization") version "2.1.0"
+    id("org.jetbrains.qodana") version "2025.1.0"
+    id("org.jetbrains.kotlinx.kover") version "0.9.1"
+    kotlin("plugin.serialization") version "2.1.20"
 }
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
@@ -47,23 +41,6 @@ repositories {
     intellijPlatform {
         defaultRepositories()
         localPlatformArtifacts()
-    }
-}
-
-// Configure Gradle Qodana Plugin - read more: https://github.com/JetBrains/gradle-qodana-plugin
-qodana {
-    cachePath.set(provider { file(".qodana").canonicalPath })
-    reportPath.set(provider { file("build/reports/inspections").canonicalPath })
-    saveReport.set(true)
-    showReport.set(environment("QODANA_SHOW_REPORT").map { it.toBoolean() }.getOrElse(false))
-}
-
-// Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
-koverReport {
-    defaults {
-        xml {
-            onCheck = true
-        }
     }
 }
 

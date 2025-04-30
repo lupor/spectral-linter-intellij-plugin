@@ -1,8 +1,8 @@
 package com.schwarzit.spectralIntellijPlugin.settings
 
-import com.intellij.openapi.components.service
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
+import com.intellij.ui.dsl.builder.selected
 import javax.swing.JComponent
 
 class ProjectSettingsConfigurable(private val project: Project) : Configurable {
@@ -10,13 +10,13 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
     private lateinit var settingsComponent: SettingsComponent
 
     override fun createComponent(): JComponent {
-        val settings = project.getService(ProjectSettingsState::class.java)
+        val settings = ProjectSettingsState.getInstance(project)
         settingsComponent = SettingsComponent()
 
         settingsComponent.rulesetInput.text = settings.ruleset
         settingsComponent.includedFilesInput.text = settings.includedFiles
-        settingsComponent.useFileOverrides.isSelected = settings.useFileOverrides
-        settingsComponent.useNodePackageWin.isSelected = settings.useNodePackageWin
+        settingsComponent.useFileOverrides.selected(settings.useFileOverrides)
+        settingsComponent.useNodePackageWin.selected(settings.useNodePackageWin)
         return settingsComponent.mainPanel
     }
 
@@ -25,20 +25,20 @@ class ProjectSettingsConfigurable(private val project: Project) : Configurable {
     }
 
     override fun isModified(): Boolean {
-        val settings = project.service<ProjectSettingsState>()
+        val settings = ProjectSettingsState.getInstance(project)
         var modified = settingsComponent.rulesetInput.text != settings.ruleset
         modified = modified || settingsComponent.includedFilesInput.text != settings.includedFiles
-        modified = modified || settingsComponent.useFileOverrides.isSelected != settings.useFileOverrides
-        modified = modified || settingsComponent.useNodePackageWin.isSelected != settings.useNodePackageWin
+        modified = modified || settingsComponent.useFileOverrides.selected.invoke() != settings.useFileOverrides
+        modified = modified || settingsComponent.useNodePackageWin.selected.invoke() != settings.useNodePackageWin
         return modified
     }
 
     override fun apply() {
-        val settings = project.service<ProjectSettingsState>()
+        val settings = ProjectSettingsState.getInstance(project)
         settings.ruleset = settingsComponent.rulesetInput.text
         settings.includedFiles = settingsComponent.includedFilesInput.text
-        settings.useFileOverrides = settingsComponent.useFileOverrides.isSelected
-        settings.useNodePackageWin = settingsComponent.useNodePackageWin.isSelected
+        settings.useFileOverrides = settingsComponent.useFileOverrides.selected.invoke()
+        settings.useNodePackageWin = settingsComponent.useNodePackageWin.selected.invoke()
     }
 
     override fun getDisplayName(): String {

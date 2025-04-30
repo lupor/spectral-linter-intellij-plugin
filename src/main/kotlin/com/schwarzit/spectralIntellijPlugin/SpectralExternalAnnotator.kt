@@ -4,7 +4,6 @@ import com.intellij.json.psi.JsonFile
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.ExternalAnnotator
 import com.intellij.lang.annotation.HighlightSeverity
-import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.progress.ProgressManager
@@ -28,8 +27,10 @@ class SpectralExternalAnnotator : ExternalAnnotator<Pair<PsiFile, Editor>, List<
     override fun collectInformation(file: PsiFile, editor: Editor, hasErrors: Boolean): Pair<PsiFile, Editor>? {
         if (file !is JsonFile && file !is YAMLFile) return null
 
-        val settings = editor.project?.service<ProjectSettingsState>()
-        val includedFiles = settings?.includedFiles?.lines() ?: emptyList()
+        if (editor.project == null) return null
+
+        val settings = ProjectSettingsState.getInstance(editor.project!!)
+        val includedFiles = settings.includedFiles.lines()
 
         try {
             if (!isFileIncluded(
@@ -41,7 +42,7 @@ class SpectralExternalAnnotator : ExternalAnnotator<Pair<PsiFile, Editor>, List<
                 return null
             }
         } catch (e: Throwable) {
-            logger.error("Failed to check if current file is included. Parameters: basePath: ${file.project.basePath}, path: ${file.virtualFile.toNioPath()}, includedFiles: $includedFiles")
+            logger.error("Failed to check if current file is included. Parameters: basePath: ${file.project.basePath}, path: ${file.virtualFile.toNioPath()}, includedFiles: $includedFiles", e)
             return null
         }
 
@@ -83,7 +84,7 @@ class SpectralExternalAnnotator : ExternalAnnotator<Pair<PsiFile, Editor>, List<
             return emptyList()
         }
 
-        val linter = project.service<SpectralRunner>()
+        val linter = SpectralRunner.getInstance(project)
         return try {
             val issues = linter.run(editor.document)
             issues
