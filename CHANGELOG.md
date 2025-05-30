@@ -17,6 +17,18 @@
 
 ### Security
 
+## 0.0.11 - 2025-04-30
+
+### Changed
+
+- Bumped dependencies and upgraded to latest platform version
+- Moved to new Kotlin UI dsl
+
+### Removed
+
+- Removed unused tasks
+- Dropped compatibility with version lower than 241
+
 ## 0.0.10 - 2025-02-19
 
 ### Fixed
