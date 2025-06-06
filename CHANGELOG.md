@@ -17,6 +17,12 @@
 
 ### Security
 
+## 0.0.12 - 2025-06-06
+
+### Removed
+
+- Removed upper bound for supported builds
+
 ## 0.0.11 - 2025-04-30
 
 ### Changed
