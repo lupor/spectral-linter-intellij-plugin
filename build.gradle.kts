@@ -4,13 +4,13 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 
-val kotlinxSerializationJsonVersion = "1.8.1"
-val kotlinReflectVersion = "2.1.20"
-val springCoreVersion = "6.2.6"
-val junitJupiterVersion = "5.12.2"
+val kotlinxSerializationJsonVersion = "1.9.0"
+val kotlinReflectVersion = "2.2.0"
+val springCoreVersion = "6.2.8"
+val junitJupiterVersion = "5.13.2"
 val junit4Version = "4.13.2"
-val commonsIoVersion = "2.18.0"
-val intelliJJsonVersion = "251.25410.28"
+val commonsIoVersion = "2.19.0"
+val intelliJJsonVersion = "252.23591.19"
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
@@ -19,12 +19,12 @@ val platformVersion = properties("platformVersion").get()
 
 plugins {
     id("java")
-    kotlin("jvm") version "2.1.20"
-    id("org.jetbrains.intellij.platform") version "2.5.0"
+    kotlin("jvm") version "2.2.0"
+    id("org.jetbrains.intellij.platform") version "2.6.0"
     id("org.jetbrains.changelog") version "2.2.1"
-    id("org.jetbrains.qodana") version "2025.1.0"
+    id("org.jetbrains.qodana") version "2025.1.1"
     id("org.jetbrains.kotlinx.kover") version "0.9.1"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 // Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
@@ -52,6 +52,7 @@ tasks {
 }
 
 val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
+    version = "2024.2"
     task {
         jvmArgumentProviders += CommandLineArgumentProvider {
             listOf(
@@ -95,7 +96,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflectVersion")
     implementation("org.springframework:spring-core:$springCoreVersion")
     implementation("commons-io:commons-io:$commonsIoVersion")
-
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Needed as workaround for https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-faq.html#junit5-test-framework-refers-to-junit4
