@@ -17,6 +17,12 @@
 
 ### Security
 
+## 0.0.13 - 2025-06-30
+
+### Changed
+
+- Bumped deps and fixed compatibility warning by @lupor in https://github.com/lupor/spectral-linter-intellij-plugin/pull/18
+
 ## 0.0.12 - 2025-06-06
 
 ### Removed
