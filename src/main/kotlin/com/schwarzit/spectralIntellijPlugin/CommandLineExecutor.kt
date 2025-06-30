@@ -13,7 +13,8 @@ class CommandLineExecutor {
         private val logger = getLogger()
 
         @JvmStatic
-        fun getInstance(): CommandLineExecutor = ApplicationManager.getApplication().getService(CommandLineExecutor::class.java)
+        fun getInstance(): CommandLineExecutor =
+            ApplicationManager.getApplication().getService(CommandLineExecutor::class.java)
     }
 
     fun execute(commandLine: GeneralCommandLine, timeout: Duration? = null): ProcessOutput {
@@ -24,7 +25,7 @@ class CommandLineExecutor {
 
         logger.debug("Executing command: $command")
 
-        handler.addProcessListener(object : ProcessAdapter() {
+        handler.addProcessListener(object : ProcessListener {
             override fun onTextAvailable(event: ProcessEvent, outputType: Key<*>) {
                 when (outputType) {
                     ProcessOutputType.STDERR -> output.appendStderr(event.text)
