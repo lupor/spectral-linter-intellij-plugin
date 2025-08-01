@@ -17,6 +17,12 @@
 
 ### Security
 
+## 0.0.14 - 2025-08-01
+
+### Changed
+
+- Fixed issue where malformed results were returned by the tool by @lupor in https://github.com/lupor/spectral-linter-intellij-plugin/pull/20
+
 ## 0.0.13 - 2025-06-30
 
 ### Changed
